@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 import classReport, classBan
 from geopy.geocoders import Nominatim
 # noinspection SpellCheckingInspection
