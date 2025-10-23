@@ -1,4 +1,5 @@
-import classReport, classBan
+from classReport import Report
+from classBan import Ban
 # noinspection SpellCheckingInspection
 
 
@@ -35,8 +36,8 @@ class User:
         self.connected_to: User = None
         self.comment: str = ''
         self.is_admin = is_admin
-        self.reports: list[classReport.report] = None
-        self.bans: list[classBan.ban] = None
+        self.reports: list[Report] = None
+        self.bans: list[Ban] = None
         self.log: list = None
 
     def info(self):

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-class ban:
+
+class Ban:
     def __init__(self, id, reason: str, duration: timedelta):
         """
 
@@ -20,11 +21,12 @@ class ban:
         Оправдана ли блокировка
         """
 
-    def info(self):
+    def info(self) -> str:
         """
         Возвараще инофрмацию о блокировке в формате str
         """
-        return f"Ban id: {self.id}\nReason: {self.reason}\nDuration: {self.duration}\nYou will be unbanned: {self.until.strftime("%Y-%m-%d %H:%M:%S")}"
+        return (f"Ban id: {self.id}\nReason: {self.reason}\nDuration: {self.duration}\nYou will be unbanned: "
+                f"{self.until.strftime('%Y-%m-%d %H:%M:%S')}")
 
     def is_active(self) -> bool:
         """
