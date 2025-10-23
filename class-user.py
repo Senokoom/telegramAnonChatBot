@@ -1,6 +1,10 @@
 import classReport, classBan
-from geopy.geocoders import Nominatim
 # noinspection SpellCheckingInspection
+
+
+
+
+
 class User:
     def __init__(self, tgid, name, age, sex, tags: list,
                  current_status, location: dict = None, is_admin: bool = False):
@@ -48,25 +52,14 @@ class User:
               f"Reports: {[x.info() for x in self.reports] if self.reports else 'Нет репортов'}\n"
               f"Bans: {[x.info for x in self.bans] if self.bans else 'Нет блокировок'}")
 
-    def city_isreal(self, location_inp) -> dict | None:
-        """
-        Проверяет существование города и возвращает *Dict(существует)* или *None* . Поддерживает русские и английские названия.
-        """
-        geolocator = Nominatim(user_agent="AnonChatTgBot UnivercityProject (leva.kochin@gmail.com)")
-        location = geolocator.geocode(location_inp)
-        if location:
-            return {"city": location_inp,
-                    "lat": location.latitude,
-                    "lon": location.longitude}
-        else:
-            return None
-
-    def setup(self):
+    def setup(self, name: str, age: int, sex: str, location: dict, tags: list):
         """
                 Настройка аккаунта пользователя. Позволяет поменять **Имя, Возраст, Пол, Геолокацию, Теги**
 
                 пока что только через консоль
                 """
+        ''' Всю эту логику надо перенести в другое место (в основной файл) тут она излишняя
+        
         self.name = self.name if ((name_inp := input("Введите имя или пропустите(skip): ")).lower() == "skip") \
             else name_inp
         # использовал тут оператор моржа и тернарную запись if. Сложна, но прикольна
@@ -79,11 +72,15 @@ class User:
         # чел может выбрать из 3х вариантов 1.
         # Хз как сделать это в python консоли, но в тг будет проще т.к. там просто кнопки сделать можно
         while (((location_inp := input("Введите из какого вы города или пропустите(skip): ")) != "skip")
-               and not (location_dict := self.city_isreal(location_inp))):
+               and not (location_dict := city_isreal(location_inp))):
             pass
-        self.location = location_dict if location_dict else self.location
-
-
+        self.location = self.location if self.location == "skip" else location_dict
+        '''
+        self.name = name
+        self.age = age
+        self.sex = sex
+        self. location = location
+        self.tags = tags
 
     def modify_comment(self, text, is_admin: bool):
         """
