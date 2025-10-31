@@ -2,6 +2,7 @@ from classUser import User
 from classBan import Ban
 from classReport import Report
 
+
 class Database:
     def __init__(self):
         pass
@@ -22,5 +23,21 @@ class Database:
     def get_all_bans(self) -> dict[str, Ban]:
         """
         :return: возвращает словарь, где key - ban.id, а value - объект класса Ban
+        """
+        pass
+
+    def insert_ban(self, ban: Ban):
+        """
+        Добавляет Ban в базу данных
+        :param ban: объект класса Ban
+        :return:
+        """
+        pass
+
+    def insert_report(self, report: Report):
+        """
+        Добавляет Report в базу данных
+        :param report: объект класса Report
+        :return:
         """
         pass

@@ -1,5 +1,7 @@
-from classReport import Report
-from classDatabase import Database
+import uuid
+
+from classes.classReport import Report
+from classes.classDatabase import Database
 
 
 class ReportManager:
@@ -31,3 +33,28 @@ class ReportManager:
             return False
         else:
             return user.reports
+
+    def create_report(self, userid, reason, severity) -> Report:
+        """
+        Создает репорт и записывает его в бд
+        :param userid: id пользователя
+        :param reason: причина
+        :param severity: тяжесть, от нее зависит скорость рассмотрения жалобы
+        :return: объект класса Report
+        """
+        report = Report(uuid.uuid4(), userid, reason, severity)
+        self.database.insert_report(report)
+        return report
+
+    def report_user_by_id(self, userid, reason, severity) -> str:
+        """
+        Кидает блокировку Report по id пользователя
+        :param userid: id пользователя
+        :param reason: причина
+        :param severity: тяжесть
+        :return:
+        """
+        user = self.database.get_user_by_id(userid)
+        user.reports.append(self.create_report(userid, reason, severity))
+        return user.reports[-1].info()
+

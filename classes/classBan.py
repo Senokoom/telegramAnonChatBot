@@ -2,10 +2,11 @@ from datetime import datetime, timedelta
 
 
 class Ban:
-    def __init__(self, id, reason: str, duration: timedelta):
+    def __init__(self, id, userid, reason: str, duration: timedelta):
         """
 
         :param id: уникальный номер блокировки
+        :param userid: уникальный id пользователя, на которого была отправлена блокировка
         :param reason: причина блокировки
         :param duration: длительность блокировки
         """

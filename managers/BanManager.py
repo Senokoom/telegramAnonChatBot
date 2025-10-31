@@ -1,6 +1,8 @@
-from classBan import Ban
-from classDatabase import Database
+import uuid
 
+from classes.classBan import Ban
+from datetime import timedelta
+from classes.classDatabase import Database
 
 class BanManager:
     """
@@ -45,3 +47,28 @@ class BanManager:
             return None
         else:
             return ban
+
+    def create_ban(self, reason: str, userid, duration: timedelta) -> Ban:
+        """
+        Создает Ban и кидает его в бд
+        :param reason: причина
+        :param userid: id пользователя
+        :param duration: длительность timedelta
+        :return: объект класса Ban
+        """
+        ban = Ban(uuid.uuid4(), reason, userid, duration)
+        self.database.insert_ban(ban)
+        return ban
+
+    def ban_user_by_id(self, userid, reason: str, duration: timedelta) -> str:
+        """
+        Кидает блокировку на пользователя User по id
+        :param reason: Причина блокировки str.
+        :param userid: уникальный id пользователя
+        :param duration: Длительность блокировки timedelta
+        :return: str информацию о только что созданном Ban
+        """
+        user = self.database.get_user_by_id(userid)
+        user.bans.append(self.create_ban(reason, userid, duration))
+        return user.bans[-1].info()
+
