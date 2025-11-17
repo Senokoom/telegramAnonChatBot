@@ -3,12 +3,9 @@ from classBan import Ban
 # noinspection SpellCheckingInspection
 
 
-
-
-
 class User:
     def __init__(self, tgid, name, age, sex, tags: list,
-                 current_status, location: dict = None, is_admin: bool = False):
+                 current_status, location: dict = None):
         """
         **Создает нового пользователя**\n
         *tgid* - id Telegram пользователя **(неизменяемое)** \n
@@ -35,7 +32,6 @@ class User:
         self.current_status = current_status
         self.connected_to: User = None
         self.comment: str = ''
-        self.is_admin = is_admin
         self.reports: list[Report] = None
         self.bans: list[Ban] = None
         self.log: list = None
@@ -94,7 +90,42 @@ class User:
 
     def log(self):
         """
+
         Выводит **log** пользователя в консоль
         """
         for x in self.log:
             print(x)
+
+        # **Создает нового пользователя**\n
+        # *tgid* - id Telegram пользователя **(неизменяемое)** \n
+        # *name* - Имя пользователя. Default имя пользователя в Telegram\n
+        # *age* - Возраст пользователя\n
+        # *sex* - пол пользователя (M, F, None)\n
+        # *tags* - теги пользователя для поиска собеседника  (пока не придумал)\n
+        # *current_status* - статус пользователя в системе (offline, online, in_chat, banned)\n
+        # *location* - геолокация пользователя, хранит в себе только город\n
+        # *connected_to* - указан другой user с которым пользователь общается\n
+        # *comment* - комментарий на пользователе, видит только admin\n
+        # *reports* - жалобы на пользователя\n
+        # *bans* - блокировки пользователя\n
+        # *log* - log именно этого пользователя
+
+    def toDict(self):
+        """
+        :return: возвращает объект класса User в виде словаря
+        """
+        user_dict = {
+            "tgid": self.tgid,
+            "name": self.name,
+            "age": self.age,
+            "sex": self.sex,
+            "tags": self.tags,
+            "current_status": self.current_status,
+            "location": self.location,
+            "connected_to": self.connected_to,
+            "comment": self.comment,
+            "reports": self.reports,
+            "bans": self.bans,
+            "log": self.log
+        }
+        return user_dict

@@ -1,7 +1,7 @@
 import uuid
 
 from classes.classReport import Report
-from classes.classDatabase import Database
+from DataManager import DataManager
 
 
 class ReportManager:
@@ -12,21 +12,21 @@ class ReportManager:
       Позволяет посмотреть репотры по id репорта/пользователя или добавить/создать блокировку
       """
 
-    def __init__(self, database: Database):
+    def __init__(self, dataManager: DataManager):
         """
         Менеджер для управления репортами
-        :param database: База данных пользователей
+        :param dataManager: База данных пользователей
         """
-        self.database = database
-        self.reports: dict[str, Report] = self.database.get_all_reports()
+        self.dataManager = dataManager
+        self.reports: dict[str, Report] = self.dataManager.get_all_reports()
 
-    def check_user_by_id(self, userid: str) -> list[Report]| bool | None:
+    def check_user_by_id(self, userid: str) -> list[Report] | bool | None:
         """
         проверяет наличие репортов у пользователя по id.
         :param userid: уникальный id пользователя
         :returns: list[Reports], если есть. False, если нету. None если id нету в базе
         """
-        user = self.database.get_user_by_id(userid)
+        user = self.dataManager.get_user_by_id(userid)
         if user is None:
             return None
         elif user.reports is None:
@@ -43,7 +43,7 @@ class ReportManager:
         :return: объект класса Report
         """
         report = Report(uuid.uuid4(), userid, reason, severity)
-        self.database.insert_report(report)
+        self.dataManager.insert_report(report)
         return report
 
     def report_user_by_id(self, userid, reason, severity) -> str:
@@ -54,7 +54,7 @@ class ReportManager:
         :param severity: тяжесть
         :return:
         """
-        user = self.database.get_user_by_id(userid)
+        user = self.dataManager.get_user_by_id(userid)
         user.reports.append(self.create_report(userid, reason, severity))
         return user.reports[-1].info()
 

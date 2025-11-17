@@ -36,4 +36,7 @@ def get_tag_score(taglist1: list[str], taglist2: list[str]) -> float:
     """
     uniqs = float(len(set(taglist1 + taglist2)))
     intersection = float(len(set(taglist1).intersection(taglist2)))
-    return intersection/uniqs
+    if uniqs <= intersection:
+        return intersection/uniqs
+    else:
+        return uniqs/intersection

@@ -2,7 +2,8 @@ import uuid
 
 from classes.classBan import Ban
 from datetime import timedelta
-from classes.classDatabase import Database
+from DataManager import DataManager
+
 
 class BanManager:
     """
@@ -11,13 +12,13 @@ class BanManager:
     Позволяет посмотреть блокировки по id блокировки/пользователя или добавить/создать блокировку
     """
 
-    def __init(self, database: Database):
+    def __init(self, dataManager: DataManager):
         """
         Менеджер для управления блокировками.
-        :param database: база данных пользователей с которой работаешь
+        :param dataManager: база данных пользователей с которой работаешь
         """
-        self.database = database
-        self.bans: dict[str, Ban] = self.database.get_all_bans()
+        self.dataManager = dataManager
+        self.bans: dict[str, Ban] = self.dataManager.get_all_bans()
 
     def check_user_by_id(self, userid: str) -> Ban | bool | None:
         """
@@ -25,7 +26,7 @@ class BanManager:
         :param userid: уникальный id пользователя
         :returns: объект класса Ban, текущую активную блокировку. False, если нету активной. None если id нету в базе
         """
-        user = self.database.get_user_by_id(userid)
+        user = self.dataManager.get_user_by_id(userid)
         if user is None:
             return None
         elif user.bans is None:
@@ -57,7 +58,7 @@ class BanManager:
         :return: объект класса Ban
         """
         ban = Ban(uuid.uuid4(), reason, userid, duration)
-        self.database.insert_ban(ban)
+        self.dataManager.insert_ban(ban)
         return ban
 
     def ban_user_by_id(self, userid, reason: str, duration: timedelta) -> str:
@@ -68,7 +69,7 @@ class BanManager:
         :param duration: Длительность блокировки timedelta
         :return: str информацию о только что созданном Ban
         """
-        user = self.database.get_user_by_id(userid)
+        user = self.dataManager.get_user_by_id(userid)
         user.bans.append(self.create_ban(reason, userid, duration))
         return user.bans[-1].info()
 
