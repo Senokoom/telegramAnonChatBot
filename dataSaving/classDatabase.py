@@ -1,6 +1,6 @@
-from classUser import User
-from classBan import Ban
-from classReport import Report
+from classes.classUser import User
+from classes.classBan import Ban
+from classes.classReport import Report
 
 
 class Database:

@@ -17,3 +17,14 @@ class Report:
         """
         return f"Report id: {self.id}\nReason: {self.reason}\nSeverity: {self.severity}"
 
+    def toDict(self) -> dict:
+        """
+        Создает dict репорта
+        :return: dict параметров репорта
+        """
+        return {
+            "id": self.id,
+            "userid": self.userid,
+            "reason": self.reason,
+            "severity": self.severity
+        }

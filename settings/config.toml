@@ -1,0 +1,4 @@
+[path]
+local_user_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\userdata.csv"
+local_report_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\userdata.csv"
+local_ban_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\bandata.csv"

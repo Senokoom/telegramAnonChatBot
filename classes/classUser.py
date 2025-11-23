@@ -4,50 +4,52 @@ from classBan import Ban
 
 
 class User:
-    def __init__(self, tgid, name, age, sex, tags: list,
-                 current_status, location: dict = None):
+    def __init__(self, userid, name, age, sex, tags: list, location: dict = None):
         """
         **Создает нового пользователя**\n
-        *tgid* - id Telegram пользователя **(неизменяемое)** \n
+        *userid* - id пользователя **(неизменяемое)** \n
         *name* - Имя пользователя. Default имя пользователя в Telegram\n
         *age* - Возраст пользователя\n
         *sex* - пол пользователя (M, F, None)\n
         *tags* - теги пользователя для поиска собеседника  (пока не придумал)\n
-        *current_status* - статус пользователя в системе (offline, online, in_chat, banned)\n
+        *current_status* - статус пользователя в системе (offline, searching, in_chat)\n
         *location* - геолокация пользователя, хранит в себе только город\n
         *connected_to* - указан другой user с которым пользователь общается\n
         *comment* - комментарий на пользователе, видит только admin\n
         *is_admin* - является ли пользователь администратором (True, False)\n
-        *reports* - жалобы на пользователя\n
-        *bans* - блокировки пользователя\n
+        (этого нет)*reports* - жалобы на пользователя\n
+        (этого нет)*bans* - блокировки пользователя\n
         *log* - log именно этого пользователя
         """
 
-        self.tgid = tgid
+        self.userid = userid
         self.name = name
         self.age = age
         self.sex = sex
         self.location = location
         self.tags = tags
-        self.current_status = current_status
-        self.connected_to: User = None
+        self.current_status = None
+        self.connected_to: User | None = None
         self.comment: str = ''
-        self.reports: list[Report] = None
-        self.bans: list[Ban] = None
-        self.log: list = None
+        # self.reports: list[Report] = []
+        # self.bans: list[Ban] = []
+        self.log: list = []
 
     def info(self):
         """
-        Выводит в консоль **данные** (*tgid, name, age, sex, current_status, comment, reports, bans*) пользователя
+        выводит в консоль **данные** пользователя (*userid, name, age, sex, comment, reports, bans*)
         """
-        print(f"Tgid: {self.tgid}\n"
-              f"Name: {self.name}\n"
-              f"Age: {self.age}\n"
-              f"Sex: {self.sex}\n"
-              f"Current status: {self.current_status}\n"
-              f"Comment: {self.comment}\n"
-              f"Reports: {[x.info() for x in self.reports] if self.reports else 'Нет репортов'}\n"
-              f"Bans: {[x.info for x in self.bans] if self.bans else 'Нет блокировок'}")
+
+        return print(
+            f"Userid: {self.userid}\n"
+            f"Name: {self.name}\n"
+            f"Age: {self.age}\n"
+            f"Sex: {self.sex}\n"
+            # f"Current status: {self.current_status}\n" тоже пока убрал
+            f"Comment: {self.comment}\n"
+            # f"Reports: {[x.info() for x in self.reports] if self.reports else 'Нет репортов'}\n" и их тож убрал
+            # f"Bans: {[x.info for x in self.bans] if self.bans else 'Нет блокировок'}" их убрал
+            )
 
     def setup(self, name: str, age: int, sex: str, location: dict, tags: list):
         """
@@ -97,7 +99,7 @@ class User:
             print(x)
 
         # **Создает нового пользователя**\n
-        # *tgid* - id Telegram пользователя **(неизменяемое)** \n
+        # *userid* - id пользователя **(неизменяемое)** \n
         # *name* - Имя пользователя. Default имя пользователя в Telegram\n
         # *age* - Возраст пользователя\n
         # *sex* - пол пользователя (M, F, None)\n
@@ -106,8 +108,8 @@ class User:
         # *location* - геолокация пользователя, хранит в себе только город\n
         # *connected_to* - указан другой user с которым пользователь общается\n
         # *comment* - комментарий на пользователе, видит только admin\n
-        # *reports* - жалобы на пользователя\n
-        # *bans* - блокировки пользователя\n
+        # (нету)*reports* - жалобы на пользователя\n
+        # (нету)*bans* - блокировки пользователя\n
         # *log* - log именно этого пользователя
 
     def toDict(self):
@@ -115,17 +117,17 @@ class User:
         :return: возвращает объект класса User в виде словаря
         """
         user_dict = {
-            "tgid": self.tgid,
+            "userid": self.userid,
             "name": self.name,
             "age": self.age,
             "sex": self.sex,
             "tags": self.tags,
-            "current_status": self.current_status,
+            # "current_status": self.current_status,
             "location": self.location,
-            "connected_to": self.connected_to,
+            # "connected_to": self.connected_to,
             "comment": self.comment,
-            "reports": self.reports,
-            "bans": self.bans,
+            # "reports": self.reports Пока убираю, переделаю так, чтобы чел был привязан к репортам
+            # "bans": self.bans Так же как и с репортами поступаю
             "log": self.log
         }
         return user_dict
