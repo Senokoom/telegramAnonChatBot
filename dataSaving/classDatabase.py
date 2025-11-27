@@ -14,6 +14,18 @@ class Database:
         """
         pass
 
+    def save_user(self, user: User):
+        """
+        Сохраняет user базу данных
+        :param user: объект класса User
+        :return: True при успешном создании, False при ошибке
+        """
+        pass
+
+
+    def get_all_users(self):
+        pass
+
     def get_all_reports(self) -> dict[str, Report]:
         """
         :return: возвращает словарь, где key - report.id, а value - объект класса Report
@@ -26,7 +38,7 @@ class Database:
         """
         pass
 
-    def insert_ban(self, ban: Ban):
+    def save_ban(self, ban: Ban):
         """
         Добавляет Ban в базу данных
         :param ban: объект класса Ban
@@ -34,7 +46,7 @@ class Database:
         """
         pass
 
-    def insert_report(self, report: Report):
+    def save_report(self, report: Report):
         """
         Добавляет Report в базу данных
         :param report: объект класса Report
