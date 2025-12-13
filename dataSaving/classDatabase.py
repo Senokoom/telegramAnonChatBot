@@ -14,7 +14,7 @@ class Database:
         """
         pass
 
-    def save_user(self, user: User):
+    def save_user(self, user: dict):
         """
         Сохраняет user базу данных
         :param user: объект класса User
@@ -38,7 +38,7 @@ class Database:
         """
         pass
 
-    def save_ban(self, ban: Ban):
+    def save_ban(self, ban: dict):
         """
         Добавляет Ban в базу данных
         :param ban: объект класса Ban
@@ -46,7 +46,7 @@ class Database:
         """
         pass
 
-    def save_report(self, report: Report):
+    def save_report(self, report: dict):
         """
         Добавляет Report в базу данных
         :param report: объект класса Report

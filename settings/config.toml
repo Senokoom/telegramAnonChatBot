@@ -2,3 +2,7 @@
 local_user_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\userdata.csv"
 local_report_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\userdata.csv"
 local_ban_save_path = "C:\\Users\\levak\\Desktop\\AnonTgBot\\data\\bandata.csv"
+local_backup_path = "C:\\Users\\levak\\Desktop\\telegramAnonChatBot\\data\\backup"
+
+[timestamps]
+local_backup_time = 300
