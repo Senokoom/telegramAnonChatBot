@@ -69,4 +69,4 @@ class DataManager:
         из локального файла сохраняет все в базу данных
         :return: результат выполнения(true, exception)
         """
-
+        pass

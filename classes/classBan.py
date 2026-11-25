@@ -2,17 +2,17 @@ from datetime import datetime, timedelta
 
 
 class Ban:
-    def __init__(self, id, userid, reason: str, duration: timedelta, date: datetime):
+    def __init__(self, id, user_id, reason: str, duration: timedelta, date: datetime):
         """
 
         :param id: уникальный номер блокировки
-        :param userid: уникальный id пользователя, на которого была отправлена блокировка
+        :param user_id: уникальный id пользователя, на которого была отправлена блокировка
         :param reason: причина блокировки
         :param date: когда выдали блокировку
         :param duration: На сколько дней выдали бан
         """
         self.id = id
-        self.userid = userid
+        self.user_id = user_id
         self.reason = reason
         self.date = date
         self.duration = duration
@@ -45,7 +45,7 @@ class Ban:
         """
         return {
             "id": self.id,
-            "userid": self.userid,
+            "userid": self.user_id,
             "reason": self.reason,
             "date": self.date,
             "duration": self.duration
