@@ -16,7 +16,7 @@ class Status(Enum):
 
 
 class User:
-    def __init__(self, id, name, age, sex, tags: list, location: str = None, comment: str = "", connected_to_id:str | None = None, current_status: Status | None = None, is_admin:bool = False, reports: list[Report] = [], bans: list[Ban] = [], log: list = []):
+    def __init__(self, id, name, age, sex, tags: list = [], location: str = None, comment: str = "", connected_to_id:str | None = None, current_status: Status | None = None, is_admin:bool = False, reports: list[Report] = [], bans: list[Ban] = [], log: list = []):
         """
         **Создает нового пользователя**\n
         *id* - id пользователя **(неизменяемое)** \n

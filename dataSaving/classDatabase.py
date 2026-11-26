@@ -1,6 +1,8 @@
 import sqlalchemy.exc
 from sqlalchemy import Column, ForeignKey
+from sqlalchemy.exc import SQLAlchemyError
 
+import logger
 from classes.classUser import User
 from classes.classBan import Ban
 from classes.classReport import Report
@@ -52,9 +54,17 @@ class DbReport(Base):
 class Database:
 
     def __init__(self, db_url = "sqlite:///my_database.db"):
-        self.engine = sa.create_engine(db_url, echo=False, connect_args={"timeout": 30})
-        Base.metadata.create_all(self.engine)
-        self.Session = sessionmaker(self.engine)
+        self.log = logger.Log("database","data").logger
+        self.log.info(
+            "---------------------------------------------NEW SESSION----------------------------------------------------")
+        try:
+            self.log.info("Запускаю БД")
+            self.engine = sa.create_engine(db_url, echo=False, connect_args={"timeout": 30})
+            Base.metadata.create_all(self.engine)
+            self.Session = sessionmaker(self.engine)
+            self.log.info("Удалось запустить базу данных")
+        except Exception as e:
+            self.log.error(f"Возникла ошибка при инициализации БД: {e}")
 
 
 
@@ -65,7 +75,9 @@ class Database:
         :param target_cls: Класс в который нужно перевести
         :return: Объект класса, который нам нужен :)
         """
+        self.log.info(f"Конвертирую объект базы данных {db_obj} в класс {target_cls.__name__}")
         if db_obj is None:
+            self.log.info("Объект базы данных оказался пустым")
             return None
         data = {
             col.name: getattr(db_obj, col.name) for col in db_obj.__table__.columns
@@ -76,7 +88,9 @@ class Database:
         """
           Переводит Ban -> DbBan или Report -> DbReport
           """
+        self.log.info(f"Конвертирую обычный объект {obj.toDict()} в класс {db_cls.__name__}")
         if obj is None:
+            self.log.info("Обычный объект оказался пустым")
             return None
         # Берем только те поля из объекта, которые реально есть как колонки в таблице БД
         col_names = {col.name for col in db_cls.__table__.columns}
@@ -88,6 +102,10 @@ class Database:
         """
           Переводит User -> DbUser вместе со списками bans и reports
           """
+        self.log.info(f"Конвертирую класс User: {user.toDict()} в класс DbUser")
+        if user is None:
+            self.log.info(f"Объект класса User оказался пустым")
+            return
         col_names = {col.name for col in DbUser.__table__.columns}
         data = {k: v for k, v in vars(user).items() if k in col_names}
         data["bans"] = [
@@ -96,7 +114,6 @@ class Database:
         data["reports"] = [
             self.target_class_to_db_class(r, DbReport) for r in (user.reports or [])
         ]
-
         return DbUser(**data)
 
 
@@ -106,7 +123,9 @@ class Database:
         :param db_user: DbUser из базы данных
         :return: Объект класса User или None
         """
+        self.log.info(f"Конвертирую класс DbUser: {db_user} в класс User")
         if db_user is None:
+            self.log.info(f"Объект класса DbUser оказался пустым")
             return None
         data = {
             col.name: getattr(db_user, col.name) for col in db_user.__table__.columns
@@ -121,6 +140,7 @@ class Database:
         :param user_id: уникальный id пользователя
         :return: Возвращает объет класса User или None. Если пользователя не существует.
         """
+        self.log.info(f"Ищу User по id {user_id}")
         with self.Session() as session:
             stmt = select(DbUser).options(selectinload(DbUser.bans), selectinload(DbUser.reports)).where(DbUser.id == user_id)
             user = session.execute(stmt).scalar_one_or_none()
@@ -133,6 +153,7 @@ class Database:
         :param user: объект класса User
         :return: True при успешном создании, False при ошибке
         """
+        self.log.info(f"Сохраняю User в базу данных: {user.toDict()}")
         db_user = self.user_to_db_user(user)
         if db_user:
             try:
@@ -141,12 +162,26 @@ class Database:
                         session.merge(db_user)
                         return True
             except sqlalchemy.exc.SQLAlchemyError as e:
-                print(f"Ошибка в БД {e}")
+                self.log.error(f"Ошибка при сохранении User в базу данных: {e}")
                 return False
 
 
-    def get_all_users(self):
-        pass
+    def get_all_users(self) -> list[User]:
+        """
+        Возвращает список всех User из базы данных
+        """
+        result = []
+        self.log.info(f"Получаю информацию обо всех пользователях в базе данных")
+        try:
+            with self.Session() as session:
+                stmt = select(DbUser)
+                Dbusers = session.execute(stmt).scalars().all()
+                if Dbusers:
+                    for user in Dbusers:
+                        result.append(self.db_user_to_user(user))
+        except SQLAlchemyError as e:
+            self.log.error(f"Ошибка при получении всех пользователей из базы данных: {e}")
+        return result
 
 
     def get_all_reports(self) -> dict[str, Report]:
@@ -161,7 +196,7 @@ class Database:
         """
         pass
 
-    def save_ban(self, ban: dict):
+    def save_ban(self, ban: Ban):
         """
         Добавляет Ban в базу данных
         :param ban: объект класса Ban
@@ -169,7 +204,7 @@ class Database:
         """
         pass
 
-    def save_report(self, report: dict):
+    def save_report(self, report: Report):
         """
         Добавляет Report в базу данных
         :param report: объект класса Report
@@ -178,35 +213,39 @@ class Database:
         pass
 
 
-from datetime import datetime, timedelta
-db = Database()
-test_user = User(
-    id="tg_100500",
-    name="тестик",
-    age=24,
-    sex="M",
-    tags=["игры", "музыка"],
-    location="Москва",
-    is_admin=True,
-)
-test_user.bans.append(
-    Ban(
-        id="ban_1",
-        user_id="tg_100500",
-        date=datetime.now(),
-        reason="тест",
-        duration=timedelta(days=7),
-    )
-)
-
-# Сохраняем
-ok = db.save_user(test_user)
-print("Сохранено:", ok)
-
-# Достаем обратно из БД
-loaded_user = db.get_user_by_id("tg_100500")
-print(f"Загружен: {loaded_user.name}, админ: {loaded_user.is_admin}")
-print(
-    f"Баны ({len(loaded_user.bans)} шт.): до"
-    f" {loaded_user.bans[0].date + loaded_user.bans[0].duration}"
-)
+# from datetime import datetime, timedelta
+# db = Database()
+# test_user = User(
+#     id="tg_100500",
+#     name="тестик",
+#     age=24,
+#     sex="M",
+#     tags=["игры", "музыка"],
+#     location="Москва",
+#     is_admin=True,
+# )
+# test_user.bans.append(
+#     Ban(
+#         id="ban_1",
+#         user_id="tg_100500",
+#         date=datetime.now(),
+#         reason="тест",
+#         duration=timedelta(days=7),
+#     )
+# )
+#
+# # Сохраняем
+# ok = db.save_user(test_user)
+# print("Сохранено:", ok)
+#
+# # Достаем обратно из БД
+# loaded_user = db.get_user_by_id("tg_100500")
+# print(f"Загружен: {loaded_user.name}, админ: {loaded_user.is_admin}")
+# print(
+#     f"Баны ({len(loaded_user.bans)} шт.): до"
+#     f" {loaded_user.bans[0].date + loaded_user.bans[0].duration}"
+# )
+#
+# users = db.get_all_users()
+# for user in users:
+#     print(user.toDict())

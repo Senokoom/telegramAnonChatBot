@@ -20,11 +20,11 @@ class LocalSaver:
         """
         Сохраняет данные user в файле csv
         :param user_dict_data: класс dict. user.todict()
-        :return: True, если успешно. Exception если нет
+        :return: True, если успешно. Exception | False если нет
         """
         try:
             if self.get_user_by_id(user_dict_data['userid']):
-                return "Was already in the system"
+                return False
             with open(self.user_save_path, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=user_dict_data)
                 writer.writeheader()
@@ -32,7 +32,7 @@ class LocalSaver:
         except Exception as e:
             return e
 
-    def get_user_by_id(self, userid: str) -> User | Exception:
+    def get_user_by_id(self, userid: str) -> User | bool:
         """
         :param userid: уникальный id пользователя
         :return: Возвращает объет класса User или Exception. Если пользователя не существует.
@@ -44,9 +44,12 @@ class LocalSaver:
                     if row['userid'] == userid:
                         return User(row["userid"], row["name"], row["age"], row["sex"], row["tags"], row["location"])
         except Exception as e:
-            return e
+            print(e)
+            return False
+        return False
 
-    def save_report(self, report_dict_data: dict) -> True | Exception:
+
+    def save_report(self, report_dict_data: dict) -> bool | Exception:
         """
         Сохраняет данные report в файле csv
         :param report_dict_data: объект dict. report.todict()
@@ -74,7 +77,7 @@ class LocalSaver:
         except Exception as e:
             return e
 
-    def save_ban(self, ban_dict_data: dict) -> True | Exception:
+    def save_ban(self, ban_dict_data: dict) -> bool | Exception:
         """
         Добавляет Ban в файл
         :param ban_dict_data: класс dict. Получается если ban.todict()
